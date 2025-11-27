@@ -28,7 +28,7 @@ export default function Home() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <Image src="/images/logo.png" alt="Logo AN GIA" width={50} height={50} />
+          <Image src="/images/logo.png" alt="Logo AN GIA" width={150} height={50} />
           <h1 style={{ fontSize: "26px", margin: 0 }}>AN GIA SERVICE</h1>
         </div>
 
