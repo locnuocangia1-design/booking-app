@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AN GIA Service - Đặt lịch & Đánh giá</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8f0fe 100%);
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        header {
+            background: linear-gradient(135deg, #0a84e6 0%, #0066cc 100%);
+            color: white;
+            padding: 20px 30px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-section img {
+            height: 50px;
+            background: white;
+            padding: 5px;
+            border-radius: 8px;
+        }
+
+        .logo-section h1 {
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-btn {
+            background: white;
+            color: #0a84e6;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .nav-btn.active {
+            background: #1a73e8;
+            color: white;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+            margin-bottom: 30px;
+        }
+
+        .technician-info {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .technician-photo {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 5px solid #0a84e6;
+            box-shadow: 0 4px 12px rgba(10, 132, 230, 0.3);
+        }
+
+        .technician-details h2 {
+            font-size: 28px;
+            color: #1f2d3d;
+            margin-bottom: 10px;
+        }
+
+        .technician-details p {
+            font-size: 16px;
+            color: #5a6c7d;
+        }
+
+        .rating-summary {
+            background: linear-gradient(135deg, #fff5e6 0%, #ffe8cc 100%);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .avg-rating {
+            font-size: 48px;
+            font-weight: 700;
+            color: #ff9800;
+            margin: 10px 0;
+        }
+
+        .stars {
+            font-size: 32px;
+            color: #ddd;
+            letter-spacing: 5px;
+        }
+
+        .stars .filled {
+            color: #ff9800;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2d3d;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e1e8ed;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #0a84e6;
+            box-shadow: 0 0 0 3px rgba(10, 132, 230, 0.1);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .star-rating {
+            display: flex;
+            gap: 10px;
+            font-size: 40px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+
+        .star-rating span {
+            color: #ddd;
+            transition: all 0.2s ease;
+        }
+
+        .star-rating span:hover,
+        .star-rating span.selected {
+            color: #ff9800;
+            transform: scale(1.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0a84e6 0%, #0066cc 100%);
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(10, 132, 230, 0.3);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(10, 132, 230, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .review-card {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0a84e6;
+            transition: all 0.3s ease;
+        }
+
+        .review-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .review-stars {
+            font-size: 20px;
+            color: #ff9800;
+        }
+
+        .review-date {
+            font-size: 14px;
+            color: #8899a6;
+        }
+
+        .review-comment {
+            margin: 12px 0;
+            color: #1f2d3d;
+            line-height: 1.6;
+        }
+
+        .review-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 8px;
+            margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .image-preview {
+            margin-top: 15px;
+            max-width: 200px;
+        }
+
+        .image-preview img {
+            max-width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        thead {
+            background: linear-gradient(135deg, #0a84e6 0%, #0066cc 100%);
+            color: white;
+        }
+
+        th, td {
+            padding: 16px;
+            text-align: left;
+        }
+
+        tbody tr {
+            border-bottom: 1px solid #e1e8ed;
+            transition: background 0.2s ease;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child {
+            border-bottom: none;
+        }
+
+        .success-message {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            padding: 16px 24px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+            animation: slideIn 0.4s ease;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8899a6;
+        }
+
+        .empty-state svg {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2d3d;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #0a84e6;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .logo-section {
+                flex-direction: column;
+            }
+
+            .logo-section h1 {
+                font-size: 20px;
+            }
+
+            .nav-buttons {
+                justify-content: center;
+            }
+
+            .technician-info {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .technician-details h2 {
+                font-size: 22px;
+            }
+
+            table {
+                font-size: 14px;
+            }
+
+            th, td {
+                padding: 10px;
+            }
+
+            .review-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <img src="https://i.ibb.co/nNvYvRMP/logo.png" alt="AN GIA Logo">
+                <h1>AN GIA SERVICE</h1>
+            </div>
+            <div class="nav-buttons">
+                <button class="nav-btn active" onclick="showPage('rating')">Đánh giá KTV</button>
+                <button class="nav-btn" onclick="showPage('booking')">Đặt lịch dịch vụ</button>
+                <button class="nav-btn" onclick="showPage('history')">Lịch sử dịch vụ</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Rating Page -->
+        <div id="ratingPage" class="page active">
+            <div class="card">
+                <div class="technician-info">
+                    <img src="https://i.ibb.co/F48ZxQ57/ktv.png" alt="Lê Anh Tuấn" class="technician-photo">
+                    <div class="technician-details">
+                        <h2>Lê Anh Tuấn</h2>
+                        <p>Kỹ thuật viên chuyên nghiệp</p>
+                        <p>Khu vực: Quận 7 & Nhà Bè</p>
+                    </div>
+                </div>
+
+                <div class="rating-summary">
+                    <h3>Đánh giá trung bình</h3>
+                    <div class="avg-rating" id="avgRating">5.0</div>
+                    <div class="stars" id="avgStars">★★★★★</div>
+                    <p id="totalReviews">0 đánh giá</p>
+                </div>
+
+                <h3 class="section-title">Đánh giá kỹ thuật viên</h3>
+                <form id="ratingForm">
+                    <div class="form-group">
+                        <label>Chọn số sao</label>
+                        <div class="star-rating" id="starInput">
+                            <span data-value="1">★</span>
+                            <span data-value="2">★</span>
+                            <span data-value="3">★</span>
+                            <span data-value="4">★</span>
+                            <span data-value="5">★</span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Nhận xét của bạn</label>
+                        <textarea id="reviewComment" placeholder="Chia sẻ trải nghiệm của bạn..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tải ảnh (tùy chọn)</label>
+                        <input type="file" id="reviewImage" accept="image/*">
+                        <div id="imagePreview" class="image-preview"></div>
+                    </div>
+
+                    <button type="submit" class="btn">Gửi đánh giá</button>
+                </form>
+            </div>
+
+            <div class="card">
+                <h3 class="section-title">Các đánh giá gần đây</h3>
+                <div id="reviewsList"></div>
+            </div>
+        </div>
+
+        <!-- Booking Page -->
+        <div id="bookingPage" class="page">
+            <div class="card">
+                <h3 class="section-title">Đặt lịch dịch vụ</h3>
+                <form id="bookingForm">
+                    <div class="form-group">
+                        <label>Chọn ngày</label>
+                        <input type="date" id="bookingDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chọn giờ</label>
+                        <input type="time" id="bookingTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Địa chỉ</label>
+                        <input type="text" id="bookingAddress" placeholder="Nhập địa chỉ của bạn" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Chọn kỹ thuật viên</label>
+                        <select id="bookingTechnician">
+                            <option value="Lê Anh Tuấn">Lê Anh Tuấn</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn">Xác nhận đặt lịch</button>
+                </form>
+
+                <div id="bookingSuccess" class="success-message">
+                    Đặt lịch thành công!
+                </div>
+            </div>
+        </div>
+
+        <!-- History Page -->
+        <div id="historyPage" class="page">
+            <div class="card">
+                <h3 class="section-title">Lịch sử dịch vụ</h3>
+                <div id="historyContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedRating = 5;
+
+        function showPage(pageName) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (pageName === 'rating') {
+                document.getElementById('ratingPage').classList.add('active');
+                event.target.classList.add('active');
+                loadReviews();
+            } else if (pageName === 'booking') {
+                document.getElementById('bookingPage').classList.add('active');
+                event.target.classList.add('active');
+                setDefaultDate();
+            } else if (pageName === 'history') {
+                document.getElementById('historyPage').classList.add('active');
+                event.target.classList.add('active');
+                loadHistory();
+            }
+        }
+
+        function setDefaultDate() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('bookingDate').value = today;
+            document.getElementById('bookingDate').min = today;
+        }
+
+        document.querySelectorAll('#starInput span').forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.dataset.value);
+                updateStarSelection();
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const value = parseInt(this.dataset.value);
+                document.querySelectorAll('#starInput span').forEach((s, idx) => {
+                    if (idx < value) {
+                        s.style.color = '#ff9800';
+                    } else {
+                        s.style.color = '#ddd';
+                    }
+                });
+            });
+        });
+
+        document.getElementById('starInput').addEventListener('mouseleave', updateStarSelection);
+
+        function updateStarSelection() {
+            document.querySelectorAll('#starInput span').forEach((star, idx) => {
+                if (idx < selectedRating) {
+                    star.classList.add('selected');
+                } else {
+                    star.classList.remove('selected');
+                }
+            });
+        }
+
+        document.getElementById('reviewImage').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('imagePreview');
+
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '';
+            }
+        });
+
+        document.getElementById('ratingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const comment = document.getElementById('reviewComment').value;
+            const imageFile = document.getElementById('reviewImage').files[0];
+
+            const review = {
+                rating: selectedRating,
+                comment: comment,
+                date: new Date().toISOString(),
+                image: null
+            };
+
+            if (imageFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    review.image = e.target.result;
+                    saveReview(review);
+                };
+                reader.readAsDataURL(imageFile);
+            } else {
+                saveReview(review);
+            }
+        });
+
+        function saveReview(review) {
+            let reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+            reviews.unshift(review);
+            localStorage.setItem('reviews', JSON.stringify(reviews));
+
+            document.getElementById('ratingForm').reset();
+            document.getElementById('imagePreview').innerHTML = '';
+            selectedRating = 5;
+            updateStarSelection();
+
+            loadReviews();
+
+            window.scrollTo({ top: document.getElementById('reviewsList').offsetTop - 100, behavior: 'smooth' });
+        }
+
+        function loadReviews() {
+            const reviews = JSON.parse(localStorage.getItem('reviews') || '[]');
+            const reviewsList = document.getElementById('reviewsList');
+
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z"/>
+                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clip-rule="evenodd"/>
+                        </svg>
+                        <p>Chưa có đánh giá nào</p>
+                    </div>
+                `;
+            } else {
+                reviewsList.innerHTML = reviews.map(review => `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-stars">${getStars(review.rating)}</div>
+                            <div class="review-date">${formatDate(review.date)}</div>
+                        </div>
+                        <div class="review-comment">${review.comment}</div>
+                        ${review.image ? `<img src="${review.image}" alt="Review image" class="review-image">` : ''}
+                    </div>
+                `).join('');
+            }
+
+            updateAverageRating(reviews);
+        }
+
+        function getStars(rating) {
+            return '★'.repeat(rating) + '☆'.repeat(5 - rating);
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleString('vi-VN', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function updateAverageRating(reviews) {
+            if (reviews.length === 0) {
+                document.getElementById('avgRating').textContent = '5.0';
+                document.getElementById('avgStars').innerHTML = '★★★★★';
+                document.getElementById('totalReviews').textContent = '0 đánh giá';
+                return;
+            }
+
+            const total = reviews.reduce((sum, review) => sum + review.rating, 0);
+            const average = (total / reviews.length).toFixed(1);
+
+            document.getElementById('avgRating').textContent = average;
+
+            const fullStars = Math.floor(average);
+            const halfStar = average % 1 >= 0.5 ? 1 : 0;
+            const emptyStars = 5 - fullStars - halfStar;
+
+            document.getElementById('avgStars').innerHTML =
+                '<span class="filled">' + '★'.repeat(fullStars) + '</span>' +
+                (halfStar ? '<span class="filled">★</span>' : '') +
+                '☆'.repeat(emptyStars);
+
+            document.getElementById('totalReviews').textContent = `${reviews.length} đánh giá`;
+        }
+
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const booking = {
+                date: document.getElementById('bookingDate').value,
+                time: document.getElementById('bookingTime').value,
+                address: document.getElementById('bookingAddress').value,
+                technician: document.getElementById('bookingTechnician').value,
+                service: 'Thay lõi lọc nước',
+                createdAt: new Date().toISOString()
+            };
+
+            let bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            bookings.unshift(booking);
+            localStorage.setItem('bookings', JSON.stringify(bookings));
+
+            document.getElementById('bookingForm').reset();
+
+            const successMsg = document.getElementById('bookingSuccess');
+            successMsg.classList.add('show');
+
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        });
+
+        function loadHistory() {
+            const bookings = JSON.parse(localStorage.getItem('bookings') || '[]');
+            const historyContent = document.getElementById('historyContent');
+
+            if (bookings.length === 0) {
+                historyContent.innerHTML = `
+                    <div class="empty-state">
+                        <svg fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        </svg>
+                        <p>Chưa có lịch sử đặt lịch</p>
+                    </div>
+                `;
+            } else {
+                historyContent.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Ngày & Giờ</th>
+                                <th>Kỹ thuật viên</th>
+                                <th>Dịch vụ</th>
+                                <th>Địa chỉ</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${bookings.map(booking => `
+                                <tr>
+                                    <td>${booking.date} ${booking.time}</td>
+                                    <td>${booking.technician}</td>
+                                    <td>${booking.service}</td>
+                                    <td>${booking.address}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+
+        window.onload = function() {
+            loadReviews();
+            setDefaultDate();
+        };
+    </script>
+</body>
+</html>
